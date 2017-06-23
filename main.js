@@ -3,7 +3,7 @@ const electron = require('electron')
 const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
-const {ipcMain} = require('electron')
+const {ipcMain, ipcRenderer} = require('electron')
 
 const path = require('path')
 const url = require('url')
@@ -16,10 +16,8 @@ let videoRatio = 16 / 9;
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({ 
-    // width: 598,
-    // height: 337,
-    width: 100,
-    height: 400,
+    width: 598,
+    height: 337,
     frame: false,
     alwaysOnTop: true,
     movable: true,
@@ -33,6 +31,8 @@ function createWindow() {
     slashes: true
   }))
 
+  global.cliParameters = process.argv.slice(2);
+  
   ipcMain.on('message', (event, data) => {
     if (data.event === 'videoRatio') {
       videoRatio = data.data;

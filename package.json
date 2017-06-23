@@ -4,7 +4,7 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron . https://www.youtube.com/watch?v=N3rhpP741Gc"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
