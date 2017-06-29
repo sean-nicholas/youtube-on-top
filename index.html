@@ -46,23 +46,40 @@
     const remote =  require('electron').remote
     const browserWindow = remote.getCurrentWindow();
     const webview = document.querySelector('webview');
+    const startButtonSelectors = [
+      '[aria-label="YouTube-Videoplayer"]', //Youtube
+      '[aria-label="Video abspielen"]', // ZDF
+      '[title="ARD-Player. Abspielen"]', // ARD
+      '.k-play-button-large' //Kabeleins --> does not work like a charm
+    ];
 
     function loadPage() {
       webview.removeEventListener('dom-ready', loadPage);
       webview.loadURL(remote.getGlobal('cliParameters')[0]);
       webview.addEventListener('dom-ready', () => {
-        // webview.openDevTools();
+        webview.openDevTools();
         webview.executeJavaScript(`
-          const player = document.querySelector('[aria-label="YouTube-Videoplayer"]')
-          player.click();
-          const video = document.querySelector('video');
-          video.style = '';
-          body.innerHTML = '';
-          body.appendChild(video);
-          video.play();
-          video.onloadedmetadata = () => {
-            sendVideoRatio(video.videoWidth / video.videoHeight);
-          }
+          setTimeout(() => {
+            const player = document.querySelector('${startButtonSelectors.join(', ')}')
+            player.click();
+            const video = document.querySelector('video');
+            
+            // Reset styles
+            video.style = 'width: 100%; height: 100%';
+            document.body.innerHTML = '';
+            document.body.style = 'margin: 0';
+            document.querySelector('html').style = '';
+            var stylesheets = document.getElementsByTagName('link'), i, sheet;
+            for(sheet of stylesheets) {
+                sheet.parentNode.removeChild(sheet);
+            }
+
+            document.body.appendChild(video);
+            video.play();
+            video.onloadedmetadata = () => {
+              sendVideoRatio(video.videoWidth / video.videoHeight);
+            }
+          }, 2000)
         `);
       })
     }
